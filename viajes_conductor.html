@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Registro de Viajes</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a1a0f; --surface: #0f2318; --surface2: #163020;
+    --border: #1e4428; --accent: #27AE60; --accent2: #2ecc71;
+    --text: #e8f5ec; --muted: #5a8a6a; --success: #2ecc71; --error: #e74c3c; --radius: 16px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text);
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+
+  .header { width: 100%; padding: 24px 24px 20px; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .header-top { display: flex; align-items: center; gap: 12px; max-width: 480px; margin: 0 auto; }
+  .icon { font-size: 28px; }
+  .header h1 { font-family: 'Space Mono', monospace; font-size: 16px; font-weight: 700; color: var(--accent2); line-height: 1.2; }
+  .header p { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; margin-top: 3px; }
+
+  .main { width: 100%; max-width: 480px; padding: 24px 20px 48px; display: flex; flex-direction: column; gap: 16px; }
+
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--muted); font-family: 'Space Mono', monospace; }
+  .field input, .field select {
+    width: 100%; padding: 15px 18px; background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif;
+    font-size: 16px; outline: none; transition: border-color 0.2s; appearance: none; -webkit-appearance: none;
+  }
+  .field input:focus, .field select:focus { border-color: var(--accent); background: var(--surface2); }
+  .field input::placeholder { color: var(--muted); }
+  .field select option { background: var(--surface2); color: var(--text); }
+
+  .select-wrap { position: relative; }
+  .select-wrap::after { content: '▾'; position: absolute; right: 18px; top: 50%;
+    transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 14px; }
+
+  .prefix-wrap { position: relative; }
+  .prefix-wrap input { padding-left: 42px; }
+  .prefix { position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+    color: var(--muted); font-family: 'Space Mono', monospace; font-size: 14px; pointer-events: none; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+  .btn { width: 100%; padding: 18px; background: var(--accent); color: #fff; border: none;
+    border-radius: var(--radius); font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.5px; cursor: pointer; transition: transform 0.15s, opacity 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 4px; }
+  .btn:active { transform: scale(0.97); opacity: 0.9; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .status { padding: 13px 16px; border-radius: var(--radius); font-size: 13px; font-weight: 500;
+    display: none; align-items: center; gap: 10px; animation: fadeIn 0.3s ease; }
+  .status.success { background: rgba(46,204,113,0.12); border: 1px solid rgba(46,204,113,0.3); color: var(--success); display: flex; }
+  .status.error { background: rgba(231,76,60,0.12); border: 1px solid rgba(231,76,60,0.3); color: var(--error); display: flex; }
+
+  .history-title { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+  .history-list { display: flex; flex-direction: column; gap: 8px; }
+  .history-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 16px; animation: slideIn 0.3s ease; }
+  .hi-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .hi-producto { font-size: 14px; font-weight: 600; color: var(--accent2); }
+  .hi-valor { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; color: var(--accent2); }
+  .hi-meta { font-size: 11px; color: var(--muted); }
+  .empty { font-size: 13px; color: var(--muted); text-align: center; padding: 16px; font-style: italic; }
+
+  .spinner { width: 17px; height: 17px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+    border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px;
+    font-family: 'Space Mono', monospace; font-weight: 700; letter-spacing: 0.5px;
+    background: rgba(39,174,96,0.15); color: var(--accent2); border: 1px solid rgba(39,174,96,0.3); }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <span class="icon">🚚</span>
+    <div>
+      <h1>REGISTRO DE VIAJES</h1>
+      <p>International 8900 - VKJ 791</p>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="row2">
+    <div class="field">
+      <label>Empresa</label>
+      <input type="text" id="empresa" placeholder="Ej: EVM">
+    </div>
+    <div class="field">
+      <label>Fecha</label>
+      <input type="date" id="fecha">
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Inicio (origen)</label>
+    <input type="text" id="inicio" placeholder="Ej: Mina la calera">
+  </div>
+
+  <div class="field">
+    <label>Destino</label>
+    <input type="text" id="destino" placeholder="Ej: Planta EVM">
+  </div>
+
+  <div class="field">
+    <label>Producto</label>
+    <div class="select-wrap">
+      <select id="producto">
+        <option value="" disabled selected>Selecciona el producto</option>
+        <option>Gravilla</option>
+        <option>Base</option>
+        <option>Mezcla asfaltica</option>
+        <option>Piedra</option>
+        <option>Otro</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row2">
+    <div class="field">
+      <label>Peso cargado</label>
+      <input type="text" id="peso" placeholder="Ej: 13,5m³">
+    </div>
+    <div class="field">
+      <label>No. Pedido</label>
+      <input type="text" id="nopedido" placeholder="Ej: 33517" inputmode="numeric">
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Valor del viaje</label>
+    <div class="prefix-wrap">
+      <span class="prefix">$</span>
+      <input type="number" id="valor" placeholder="Ej: 280 = $280.000" min="0" inputmode="numeric">
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="status" id="status"></div>
+
+  <button class="btn" id="btnGuardar" onclick="guardar()">
+    <div class="spinner" id="spinner"></div>
+    <span id="btnText">GUARDAR VIAJE</span>
+  </button>
+
+  <div class="divider"></div>
+  <p class="history-title">Viajes de esta sesión</p>
+  <div class="history-list" id="historial">
+    <p class="empty">Aún no has registrado viajes</p>
+  </div>
+
+</div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwufVzGjbvOCo7m3Y2A8v-0QSU6TNH7DJBa2Wsd1Iz4OimKoXj-nJZXo9qtN2rVjdvqpw/exec";
+  const SHEET_URL  = "https://docs.google.com/spreadsheets/d/1JDJ9ZCjV36tKdwB1W1BOLonuI_9tMq6oXJF6Ex_wNHg/edit";
+
+  // Fecha de hoy por defecto
+  const hoy = new Date();
+  document.getElementById('fecha').value =
+    `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+
+  function formatFecha(val) { const [y,m,d]=val.split('-'); return `${d}/${m}/${y}`; }
+  function formatPesos(n) { return '$'+Number(n).toLocaleString('es-CO'); }
+
+  function mostrarStatus(tipo, msg) {
+    const el = document.getElementById('status');
+    el.className = 'status ' + tipo;
+    el.innerHTML = (tipo==='success'?'✓ ':'✗ ') + msg;
+    setTimeout(()=>{ el.className='status'; }, 4000);
+  }
+
+  function setLoading(on) {
+    document.getElementById('btnGuardar').disabled = on;
+    document.getElementById('spinner').style.display = on ? 'block' : 'none';
+    document.getElementById('btnText').textContent = on ? 'GUARDANDO...' : 'GUARDAR VIAJE';
+  }
+
+  function agregarHistorial(item) {
+    const lista = document.getElementById('historial');
+    const empty = lista.querySelector('.empty');
+    if (empty) empty.remove();
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML = `
+      <div class="hi-top">
+        <span class="hi-producto">${item.producto}</span>
+        <span class="hi-valor">${item.valor>0 ? formatPesos(item.valor) : '—'}</span>
+      </div>
+      <div class="hi-meta">${item.inicio} → ${item.destino} · ${item.fecha} <span class="badge">${item.empresa}</span></div>
+    `;
+    lista.insertBefore(div, lista.firstChild);
+    while (lista.children.length > 5) lista.removeChild(lista.lastChild);
+  }
+
+  async function guardar() {
+    const empresa  = document.getElementById('empresa').value.trim();
+    const fecha    = document.getElementById('fecha').value;
+    const inicio   = document.getElementById('inicio').value.trim();
+    const destino  = document.getElementById('destino').value.trim();
+    const producto = document.getElementById('producto').value;
+    const peso     = document.getElementById('peso').value.trim();
+    const nopedido = document.getElementById('nopedido').value.trim();
+    const valor    = document.getElementById('valor').value;
+
+    if (!empresa||!fecha||!inicio||!destino||!producto) {
+      mostrarStatus('error', 'Completa empresa, fecha, inicio, destino y producto.');
+      return;
+    }
+
+    setLoading(true);
+    const valorReal = valor ? Number(valor)*1000 : 0;
+
+    try {
+      const resp = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          tipo: 'viaje',
+          sheetUrl: SHEET_URL,
+          empresa, fecha: formatFecha(fecha),
+          inicio, destino, producto, peso, nopedido,
+          valor: valorReal
+        })
+      });
+      const data = await resp.json();
+      if (data.status==='ok') {
+        mostrarStatus('success', '¡Viaje guardado!');
+        agregarHistorial({ empresa, fecha:formatFecha(fecha), inicio, destino, producto, valor:valorReal });
+        // Limpiar campos (mantener empresa y fecha)
+        document.getElementById('inicio').value='';
+        document.getElementById('destino').value='';
+        document.getElementById('producto').value='';
+        document.getElementById('peso').value='';
+        document.getElementById('nopedido').value='';
+        document.getElementById('valor').value='';
+      } else {
+        mostrarStatus('error', 'Error: '+(data.mensaje||'intenta de nuevo'));
+      }
+    } catch(e) {
+      mostrarStatus('error', 'Sin conexión. Revisa tu internet.');
+    }
+    setLoading(false);
+  }
+</script>
+</body>
+</html>
