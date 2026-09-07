@@ -137,8 +137,8 @@
       <input type="text" id="cantidad" placeholder="Ej: 13,5m³">
     </div>
     <div class="field">
-      <label>No. Pedido</label>
-      <input type="text" id="nopedido" placeholder="Ej: 33517" inputmode="numeric">
+      <label>No. Pedido *</label>
+      <input type="text" id="nopedido" placeholder="Ej: 33517 (si no tienes, pon 123)" inputmode="numeric">
     </div>
   </div>
 
@@ -220,6 +220,11 @@
 
     if (!empresa||!fecha||!inicio||!destino||!producto) {
       mostrarStatus('error', 'Completa empresa, fecha, inicio, destino y producto.');
+      return;
+    }
+
+    if (!/^\d{3,}$/.test(nopedido)) {
+      mostrarStatus('error', 'Ingresa el número de pedido (mínimo 3 dígitos). Si no tienes uno, ingresa 123.');
       return;
     }
 
