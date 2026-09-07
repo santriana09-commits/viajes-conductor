@@ -1,3 +1,6 @@
+Copia todo este bloque y pégalo en GitHub (borrando todo lo que había):
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -43,6 +46,12 @@
   .prefix-wrap input { padding-left: 42px; }
   .prefix { position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
     color: var(--muted); font-family: 'Space Mono', monospace; font-size: 14px; pointer-events: none; }
+
+  .field.invalid input { border-color: var(--error); background: rgba(231,76,60,0.08); }
+  .helper-text { font-size: 11px; color: var(--accent); display: flex; align-items: center; gap: 5px; }
+  .field-error { font-size: 11px; color: var(--error); font-weight: 600; display: none; align-items: center; gap: 5px; }
+  .field.invalid .field-error { display: flex; }
+  .field.invalid .helper-text { display: none; }
 
   .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
@@ -136,9 +145,11 @@
       <label>Cantidad</label>
       <input type="text" id="cantidad" placeholder="Ej: 13,5m³">
     </div>
-    <div class="field">
+    <div class="field" id="nopedido-field">
       <label>No. Pedido *</label>
-      <input type="text" id="nopedido" placeholder="Ej: 33517 (si no tienes, pon 123)" inputmode="numeric">
+      <input type="text" id="nopedido" placeholder="Ej: 33517" inputmode="numeric">
+      <span class="helper-text">⚠️ Ingresa número de pedido</span>
+      <span class="field-error">⚠️ Ingresa el número de pedido (si no lo tienes ingresa 123)</span>
     </div>
   </div>
 
@@ -191,6 +202,12 @@
     document.getElementById('btnText').textContent = on ? 'GUARDANDO...' : 'GUARDAR VIAJE';
   }
 
+  document.getElementById('nopedido').addEventListener('input', function() {
+    if (/^\d{3,}$/.test(this.value.trim())) {
+      document.getElementById('nopedido-field').classList.remove('invalid');
+    }
+  });
+
   function agregarHistorial(item) {
     const lista = document.getElementById('historial');
     const empty = lista.querySelector('.empty');
@@ -224,9 +241,11 @@
     }
 
     if (!/^\d{3,}$/.test(nopedido)) {
-      mostrarStatus('error', 'Ingresa el número de pedido (mínimo 3 dígitos). Si no tienes uno, ingresa 123.');
+      document.getElementById('nopedido-field').classList.add('invalid');
+      document.getElementById('nopedido').focus();
       return;
     }
+    document.getElementById('nopedido-field').classList.remove('invalid');
 
     setLoading(true);
     const valorReal = valor ? Number(valor)*1000 : 0;
@@ -265,3 +284,4 @@
 </script>
 </body>
 </html>
+```
