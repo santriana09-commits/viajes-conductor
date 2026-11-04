@@ -33,6 +33,8 @@
   }
   .field input:focus, .field select:focus { border-color: var(--accent); background: var(--surface2); }
   .field input::placeholder { color: var(--muted); }
+  #cantidad { padding-left: 14px; padding-right: 10px; }
+  #cantidad::placeholder { font-size: 13px; }
   .field select option { background: var(--surface2); color: var(--text); }
 
   .select-wrap { position: relative; }
@@ -139,8 +141,8 @@
 
   <div class="row2">
     <div class="field">
-      <label>Cantidad</label>
-      <input type="text" id="cantidad" placeholder="Ej: 13,5m³">
+      <label>Cantidad u Horas</label>
+      <input type="text" id="cantidad" placeholder="Ej: 13,5m³ o 2.5 horas">
     </div>
     <div class="field" id="nopedido-field">
       <label>No. Pedido *</label>
@@ -150,7 +152,8 @@
     </div>
   </div>
 
-  <div class="field">
+  <!-- OCULTO 04/11/2026: para volver a mostrarlo, quitar style="display:none" -->
+  <div class="field" id="valor-field" style="display:none">
     <label>Valor del viaje</label>
     <div class="prefix-wrap">
       <span class="prefix">$</span>
